@@ -1,5 +1,7 @@
 package cc.chavaw.jvm;
 
+import cc.chavaw.jvm.dataStructs.Class;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

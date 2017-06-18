@@ -1,8 +1,10 @@
-package cc.chavaw.jvm;
+package cc.chavaw.jvm.dataStructs;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
+import static cc.chavaw.jvm.tools.ByteTools.*;
 
 /**
  * Class文件格式
@@ -11,18 +13,20 @@ import java.util.Arrays;
 public class Class {
     /** 魔数 */
     public byte[] magic = new byte[4];
-    /** 最低版本号 */
+    /** 次要版本号 */
     public int minor_version;
-    /** 需要的java版本号 */
+    /** 主要版本号 */
     public int major_version;
     /** 常量池大小 */
     public int constant_pool_count;
+    /** 常量池 **/
+    public ConstantPoolInfo[] constant_pools;
 
     public Class(InputStream in) throws IOException {
         in.read(magic,0,4);
-        minor_version = in.read() << 8 | in.read();
-        major_version = in.read() << 8 | in.read();
-        constant_pool_count = in.read() << 8 | in.read();
+        minor_version = getInteger(in,2);
+        major_version = getInteger(in,2);
+        constant_pool_count = getInteger(in,2);
     }
 
     @Override
