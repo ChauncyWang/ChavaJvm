@@ -25,6 +25,7 @@ public class Class {
     public Class(InputStream in) throws IOException {
         //读取魔数
         in.read(magic,0,4);
+        //读取次版本号
         minor_version = getInteger(in,2);
         major_version = getInteger(in,2);
         constant_pool_count = getInteger(in,2);
