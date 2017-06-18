@@ -23,6 +23,7 @@ public class Class {
     public ConstantPoolInfo[] constant_pools;
 
     public Class(InputStream in) throws IOException {
+        //读取魔数
         in.read(magic,0,4);
         minor_version = getInteger(in,2);
         major_version = getInteger(in,2);
