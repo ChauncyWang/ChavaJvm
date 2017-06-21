@@ -11,7 +11,7 @@ import static cc.chavaw.jvm.tools.ByteTools.getInteger;
  */
 public class ConstantClassInfo {
     /** 全限定类名常量 的索引 */
-    public int index;
+    private int index;
     public ConstantClassInfo(InputStream in) throws IOException {
         index = getInteger(in,2);
     }
