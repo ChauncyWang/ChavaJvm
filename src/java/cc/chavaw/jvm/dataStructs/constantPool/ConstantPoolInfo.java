@@ -1,4 +1,4 @@
-package cc.chavaw.jvm.dataStructs;
+package cc.chavaw.jvm.dataStructs.constantPool;
 
 /**
  * 所有常量池中11中数据类型的结构都要实现的接口

@@ -1,22 +1,22 @@
-package cc.chavaw.jvm.dataStructs;
+package cc.chavaw.jvm.dataStructs.constantPool;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static cc.chavaw.jvm.tools.ByteTools.getInteger;
+import static cc.chavaw.jvm.tools.ByteTool.getShort;
 
 /**
  * 字段名字和类型
  * Created by 13969 on 2017/6/13.
  */
-public class ConstantNameAndTypeInfo {
+public class ConstantNameAndTypeInfo implements ConstantPoolInfo {
     /** 指向字段或方法名称常量的索引  */
-    public int index1;
+    public short index1;
     /** 指向字段或方法描述符常量的索引 */
-    public int index2;
+    public short index2;
 
     public ConstantNameAndTypeInfo(InputStream in) throws IOException {
-        index1 = getInteger(in,2);
-        index2 = getInteger(in,2);
+        index1 = getShort(in);
+        index2 = getShort(in);
     }
 }
