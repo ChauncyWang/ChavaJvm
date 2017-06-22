@@ -1,12 +1,11 @@
 package cc.chavaw.jvm;
 
-import cc.chavaw.jvm.dataStructs.JvmClass;
+import cc.chavaw.jvm.dataStructs.ClassInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * 测试类
@@ -16,8 +15,8 @@ public class Test {
     public static void main(String[] args) {
         try {
             FileInputStream fis = new FileInputStream(
-                    new File("D:\\WorkSpaces\\java\\Main.class"));
-            JvmClass c = new JvmClass(fis);
+                    new File("build/classes/main/Src.class"));
+            ClassInfo c = new ClassInfo(fis);
             System.out.println(c);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

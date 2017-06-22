@@ -1,10 +1,10 @@
-package cc.chavaw.jvm;
+package cc.chavaw.jvm.dataStructs.instruction;
 
 /**
  * jvm 指令集
  * Created by 13969 on 2017/6/12.
  */
-public enum OrderSet {
+public enum InstructionSet {
     /** 误操作 */
     nop(0x00),
     /** null 进栈 */
@@ -332,6 +332,7 @@ public enum OrderSet {
     i2c(0x92),
     /** 将栈顶int型数值强制转换成short型数值并将结果压入栈顶 */
     i2s(0x93),
+
     /** 比较栈顶两long型数值大小，并将结果（1，0，-1）压入栈顶 */
     lcmp(0x94),
     /** 比较栈顶两float型数值大小，并将结果（1，0，-1）压入栈顶；当其中一个数值为NaN时，将-1压入栈顶 */
@@ -342,6 +343,7 @@ public enum OrderSet {
     dcmpl(0x97),
     /** 比较栈顶两double型数值大小，并将结果（1，0，-1）压入栈顶；当其中一个数值为NaN时，将1压入栈顶 */
     dcmpg(0x98),
+
     /** 当栈顶int型数值等于0时跳转 */
     ifeq(0x99),
     /** 当栈顶int型数值不等于0时跳转 */
@@ -449,7 +451,7 @@ public enum OrderSet {
     /** 指令码 */
     int code;
     /** 构造函数 */
-    OrderSet(int code) {
+    InstructionSet(int code) {
         this.code = code;
     }
 }

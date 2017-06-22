@@ -22,7 +22,7 @@ public enum AccessFlag {
     ACC_STRICT(0x0800),         //            method
     ACC_SYNTHETIC(0x1000),      //class field method
     ACC_ANNOTATION(0x2000),     //class
-    ACC_ENUM(0x4000);           //class
+    ACC_ENUM(0x4000);           //class field
 
     public int value;
     AccessFlag(int value) {
