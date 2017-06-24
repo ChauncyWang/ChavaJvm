@@ -16,14 +16,14 @@ import static cc.chavaw.jvm.tools.ClassParseTool.pasrseClassAccessFlag;
  * Class文件格式
  * Created by 13969 on 2017/6/13.
  */
-public class ClassInfo {
+public class ClassFile {
     /** 魔数 */
     private byte[] magic = new byte[4];
     /** 次要版本号 */
     private short minorVersion;
     /** 主要版本号 */
     private short majorVersion;
-    /** 常量池大小 */
+    /** 常量池计数器 */
     private short constantPoolCount;
     /** 常量池 **/
     private Map<Integer,ConstantPoolInfo> constantPoolInfos;
@@ -42,7 +42,7 @@ public class ClassInfo {
      * @param in 构造所需要的流
      * @throws IOException
      */
-    public ClassInfo(InputStream in) throws IOException {
+    public ClassFile(InputStream in) throws IOException {
         //读取魔数
         in.read(magic,0,4);
         //读取次版本号

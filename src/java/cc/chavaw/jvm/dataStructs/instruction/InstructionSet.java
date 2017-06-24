@@ -1,4 +1,4 @@
-﻿package cc.chavaw.jvm.dataStructs.instruction;
+package cc.chavaw.jvm.dataStructs.instruction;
 
 /**
  * jvm 指令集
@@ -233,7 +233,7 @@ public enum InstructionSet {
     fsub(0x66),
     /** 栈顶两个 double 型数值相减,并将结果进栈 */
     dsub(0x67),
-    
+
     /** 栈顶两个 int 型数值相乘,并将结果进栈 */
     imul(0x68),
     /** 栈顶两个 long 型数值相乘,并将结果进栈 */
@@ -260,7 +260,7 @@ public enum InstructionSet {
     frem(0x72),
     /** 栈顶两个 double 型数值取模运算,并将结果进栈 */
     drem(0x73),
-    
+
     /** 栈顶两个 int 型数值取负,并将结果进栈 */
     ineg(0x74),
     /** 栈顶两个 long 型数值取负,并将结果进栈 */

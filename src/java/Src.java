@@ -12,6 +12,7 @@ public class Src implements Serializable, Runnable {
 
     public static int gg = 11111;
     private int hh;
+    private Class<?> clazz;
     public static void main(String args) {
         int a = 1111;
         long b = 9222222222222222222l;
