@@ -7,10 +7,10 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Vector;
 
+import static cc.chavaw.jvm.dataStructs.AccessFlag.pasrseClassAccessFlag;
 import static cc.chavaw.jvm.tools.ByteTool.*;
 import static cc.chavaw.jvm.tools.ClassParseTool.parseConstantPools;
 import static cc.chavaw.jvm.tools.ClassParseTool.parseIntefaces;
-import static cc.chavaw.jvm.tools.ClassParseTool.pasrseClassAccessFlag;
 
 /**
  * Class文件格式
@@ -51,7 +51,7 @@ public class ClassFile {
         constantPoolCount = getShort(in);
 
         constantPoolInfos = parseConstantPools(in, constantPoolCount);
-        accessFlags = pasrseClassAccessFlag(in);
+        accessFlags = pasrseClassAccessFlag(getShort(in));
 
         thisClass = getShort(in);
         superClass = getShort(in);

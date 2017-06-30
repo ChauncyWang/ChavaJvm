@@ -24,24 +24,24 @@ public class ClassParseTool {
     /**
      * ConstantPoolInfo tag常量值和对应结构类名的映射
      */
-    private static Map<Integer, Class> map = new HashMap<>();
+    private static Map<Integer, Class> poolMap = new HashMap<>();
 
     /** constant pool tag */
     static {
-        map.put(CONSTANT_Utf8, ConstantUtf8Info.class);
-        map.put(CONSTANT_Integer, ConstantIntegerInfo.class);
-        map.put(CONSTANT_Float, ConstantFloatInfo.class);
-        map.put(CONSTANT_Long, ConstantLongInfo.class);
-        map.put(CONSTANT_Double, ConstantDoubleInfo.class);
-        map.put(CONSTANT_Class, ConstantClassInfo.class);
-        map.put(CONSTANT_String, ConstantStringInfo.class);
-        map.put(CONSTANT_Fieldref, ConstantFieldrefInfo.class);
-        map.put(COSNTANT_Methodref, ConstantMethodrefInfo.class);
-        map.put(COSNTANT_InterfaceMethodref, ConstantInterfaceMethodrefInfo.class);
-        map.put(CONSTANT_NameAndType, ConstantNameAndTypeInfo.class);
-        map.put(CONSTANT_MethodHandle,ConstantMethodHandleInfo.class);
-        map.put(CONSTANT_MethodType,ConstantMethodTypeInfo.class);
-        map.put(CONSTANT_InvokeDynamic,ConstantInvokeDynamicInfo.class);
+        poolMap.put(CONSTANT_Utf8, ConstantUtf8Info.class);
+        poolMap.put(CONSTANT_Integer, ConstantIntegerInfo.class);
+        poolMap.put(CONSTANT_Float, ConstantFloatInfo.class);
+        poolMap.put(CONSTANT_Long, ConstantLongInfo.class);
+        poolMap.put(CONSTANT_Double, ConstantDoubleInfo.class);
+        poolMap.put(CONSTANT_Class, ConstantClassInfo.class);
+        poolMap.put(CONSTANT_String, ConstantStringInfo.class);
+        poolMap.put(CONSTANT_Fieldref, ConstantFieldrefInfo.class);
+        poolMap.put(COSNTANT_Methodref, ConstantMethodrefInfo.class);
+        poolMap.put(COSNTANT_InterfaceMethodref, ConstantInterfaceMethodrefInfo.class);
+        poolMap.put(CONSTANT_NameAndType, ConstantNameAndTypeInfo.class);
+        poolMap.put(CONSTANT_MethodHandle,ConstantMethodHandleInfo.class);
+        poolMap.put(CONSTANT_MethodType,ConstantMethodTypeInfo.class);
+        poolMap.put(CONSTANT_InvokeDynamic,ConstantInvokeDynamicInfo.class);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ClassParseTool {
             ConstantPoolInfo poolInfo;
             // 暂时支持的常量池tag
             if (tag >= 1 && tag <= 16 && tag != 2 && tag != 13 && tag != 14 && tag != 17) {
-                clazz = map.get(tag);
+                clazz = poolMap.get(tag);
                 Constructor c = null;
                 try {
                     c = clazz.getDeclaredConstructor(new Class[]{InputStream.class});
@@ -87,28 +87,14 @@ public class ClassParseTool {
         return constant_pools;
     }
 
+
     /**
-     * 解析类的访问标识
-     *
-     * @param in 要解析的流
-     * @return 访问标志的Vector
+     * 解析 类的接口
+     * @param in 输入流
+     * @param interfacesCount 接口数量
+     * @return 接口在常量池的索引集合
+     * @throws IOException 发生io异常
      */
-    public static Vector<AccessFlag> pasrseClassAccessFlag(InputStream in) throws IOException {
-        Vector<AccessFlag> accessFlags = new Vector<>();
-        AccessFlag[] classFlags = new AccessFlag[]{
-                ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_INTERFACE,
-                ACC_ABSTRACT, ACC_SYNTHETIC, ACC_ANNOTATION, ACC_ENUM};
-        int t = getShort(in);
-
-        for (AccessFlag flag : classFlags) {
-            if ((t & flag.value) != 0) {
-                accessFlags.add(flag);
-            }
-        }
-
-        return accessFlags;
-    }
-
     public static Vector<Short> parseIntefaces(InputStream in, short interfacesCount) throws IOException {
         Vector<Short> intefaces = new Vector<>();
 

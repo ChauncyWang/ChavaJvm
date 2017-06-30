@@ -1,7 +1,13 @@
 package cc.chavaw.jvm.dataStructs;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Vector;
+
+import static cc.chavaw.jvm.tools.ByteTool.getShort;
+
 /**
- * 类（或者接口）的访问修饰符
+ * 类 接口 属性 字段 的访问修饰符
  * Created by 13969 on 2017/6/22.
  */
 public enum AccessFlag {
@@ -25,7 +31,51 @@ public enum AccessFlag {
     ACC_ENUM(0x4000);           //class field
 
     public int value;
+
     AccessFlag(int value) {
         this.value = value;
+    }
+
+    /**
+     * 解析类的访问标识
+     *
+     * @param flags short类型的访问标识掩码
+     * @return 解析的 AccessFlag 集合
+     * @throws IOException io异常
+     */
+    public static Vector<AccessFlag> pasrseClassAccessFlag(short flags) throws IOException {
+        Vector<AccessFlag> accessFlags = new Vector<>();
+        /** 类 支持的访问标识 */
+        AccessFlag[] classFlags = new AccessFlag[]{
+                ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_INTERFACE,
+                ACC_ABSTRACT, ACC_SYNTHETIC, ACC_ANNOTATION, ACC_ENUM};
+
+        for (AccessFlag flag : classFlags) {
+            if ((flags & flag.value) != 0) {
+                accessFlags.add(flag);
+            }
+        }
+
+        return accessFlags;
+    }
+
+    /**
+     * 解析 字段的 访问标识
+     * @param flags 字段的访问标识掩码
+     * @return AccessFlag集合
+     * @throws IOException io异常
+     */
+    public static Vector<AccessFlag> parseFieldAccessFlags(short flags) throws IOException {
+        Vector<AccessFlag> accessFlags = new Vector<>();
+        AccessFlag[] fieldFlags = new AccessFlag[]{
+                ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_STATIC, ACC_FINAL,
+                ACC_VOLATILE, ACC_TRANSIENT, ACC_SYNTHETIC, ACC_ENUM};
+
+        for(AccessFlag flag:fieldFlags) {
+            if((flags & flag.value) != 0) {
+                accessFlags.add(flag);
+            }
+        }
+        return accessFlags;
     }
 }
