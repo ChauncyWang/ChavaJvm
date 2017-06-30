@@ -9,8 +9,8 @@ import java.io.InputStream;
  */
 public class SyntheticAttribute extends AttributeInfo {
     public SyntheticAttribute(InputStream in) throws IOException {
-      super(in);
-        if(attributeLength != 0) {
+        super(in);
+        if (attributeLength != 0) {
             throw new RuntimeException("Synthetic属性不包含任何数据!");
         }
     }

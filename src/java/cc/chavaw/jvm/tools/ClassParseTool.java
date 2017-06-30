@@ -1,7 +1,5 @@
 package cc.chavaw.jvm.tools;
 
-import static cc.chavaw.jvm.dataStructs.AccessFlag.*;
-
 import cc.chavaw.jvm.dataStructs.AccessFlag;
 import cc.chavaw.jvm.dataStructs.constantPool.*;
 
@@ -13,8 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import static cc.chavaw.jvm.tools.ByteTool.getInteger;
+import static cc.chavaw.jvm.dataStructs.AccessFlag.*;
 import static cc.chavaw.jvm.tools.ByteTool.getShort;
+import static cc.chavaw.jvm.dataStructs.constantPool.Tag.*;
 
 /**
  * 与解析 class 文件相关的小工具
@@ -29,17 +28,20 @@ public class ClassParseTool {
 
     /** constant pool tag */
     static {
-        map.put(1, ConstantUtf8Info.class);
-        map.put(3, ConstantIntegerInfo.class);
-        map.put(4, ConstantFloatInfo.class);
-        map.put(5, ConstantLongInfo.class);
-        map.put(6, ConstantDoubleInfo.class);
-        map.put(7, ConstantClassInfo.class);
-        map.put(8, ConstantStringInfo.class);
-        map.put(9, ConstantFieldrefInfo.class);
-        map.put(10, ConstantMethodrefInfo.class);
-        map.put(11, ConstantInterfaceMethodrefInfo.class);
-        map.put(12, ConstantNameAndTypeInfo.class);
+        map.put(CONSTANT_Utf8, ConstantUtf8Info.class);
+        map.put(CONSTANT_Integer, ConstantIntegerInfo.class);
+        map.put(CONSTANT_Float, ConstantFloatInfo.class);
+        map.put(CONSTANT_Long, ConstantLongInfo.class);
+        map.put(CONSTANT_Double, ConstantDoubleInfo.class);
+        map.put(CONSTANT_Class, ConstantClassInfo.class);
+        map.put(CONSTANT_String, ConstantStringInfo.class);
+        map.put(CONSTANT_Fieldref, ConstantFieldrefInfo.class);
+        map.put(COSNTANT_Methodref, ConstantMethodrefInfo.class);
+        map.put(COSNTANT_InterfaceMethodref, ConstantInterfaceMethodrefInfo.class);
+        map.put(CONSTANT_NameAndType, ConstantNameAndTypeInfo.class);
+        map.put(CONSTANT_MethodHandle,ConstantMethodHandleInfo.class);
+        map.put(CONSTANT_MethodType,ConstantMethodTypeInfo.class);
+        map.put(CONSTANT_InvokeDynamic,ConstantInvokeDynamicInfo.class);
     }
 
     /**
@@ -62,7 +64,7 @@ public class ClassParseTool {
             Class clazz;
             ConstantPoolInfo poolInfo;
             // 暂时支持的常量池tag
-            if (tag >= 1 && tag <= 12 && tag != 2) {
+            if (tag >= 1 && tag <= 16 && tag != 2 && tag != 13 && tag != 14 && tag != 17) {
                 clazz = map.get(tag);
                 Constructor c = null;
                 try {

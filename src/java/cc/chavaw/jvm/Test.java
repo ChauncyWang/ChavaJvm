@@ -12,6 +12,11 @@ import java.io.IOException;
  * Created by 13969 on 2017/6/13.
  */
 public class Test {
+    @Override
+    public String toString() {
+        return "Test{}";
+    }
+
     public static void main(String[] args) {
         try {
             FileInputStream fis = new FileInputStream(
