@@ -1,6 +1,6 @@
 package cc.chavaw.jvm;
 
-import cc.chavaw.jvm.dataStructs.ClassFile;
+import cc.chavaw.jvm.classfile.ClassFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,9 +23,7 @@ public class Test {
                     new File("build/classes/main/Src.class"));
             ClassFile c = new ClassFile(fis);
             System.out.println(c);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
