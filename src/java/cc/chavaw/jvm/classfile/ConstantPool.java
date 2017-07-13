@@ -200,10 +200,11 @@ public class ConstantPool {
 
         /**
          * 构造函数
-         * @param cp 常量池
-         * @param cr classFile读取类
-         * @param tag　常量的标志
-         * @throws IOException　发生io异常　
+         *
+         * @param cp  常量池
+         * @param cr  classFile读取类
+         * @param tag 　常量的标志
+         * @throws IOException 　发生io异常
          */
         public CPRefInfo(ConstantPool cp, ClassReader cr, int tag) throws IOException {
             super(cp);
@@ -244,7 +245,6 @@ public class ConstantPool {
         public final int name_index;
 
         /**
-         *
          * @param cp
          * @param cr
          * @throws IOException
@@ -256,7 +256,8 @@ public class ConstantPool {
 
         /**
          * 测试用构造函数
-         * @param name_index　名字在常量池中的索引
+         *
+         * @param name_index 　名字在常量池中的索引
          */
         public CONSTANT_Class_info(int name_index) {
             this.name_index = name_index;
@@ -473,7 +474,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_Long_info[value: " + value + "]";
+            return I("cp.s.constant_long", value);
         }
     }
 
