@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * 解析　class file 的读取帮助类
  * Created by chava on 17-7-9.
  */
 public class ClassReader {

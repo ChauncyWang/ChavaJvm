@@ -4,17 +4,57 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static cc.chavaw.jvm.Internationalization.I;
+
 /**
  * 常量池
  * Created by chava on 17-7-9.
  */
 public class ConstantPool {
-    private final CPInfo[] pool;
+    /**
+     * 索引异常:无效的索引
+     */
+    public static class InvalidIndexException extends ConstantPoolException {
+        public InvalidIndexException(int index) {
+            super(index);
+        }
 
+        @Override
+        public String getMessage() {
+            return I("cp.e.invalid_index", index);
+        }
+    }
+
+    /**
+     * 不支持的常量池　tag
+     */
+    public static class UnexpectedTagException extends ConstantPoolException {
+        public UnexpectedTagException(int index, int tag) {
+            super(index);
+            this.tag = tag;
+        }
+
+        @Override
+        public String getMessage() {
+            return I("cp.e.unexpected_tag", index, tag);
+        }
+
+        public final int tag;
+    }
+
+
+    /**
+     * 从　ClassReader 读取所有的常量池
+     *
+     * @param cr classReader
+     * @throws Exception 发生各种异常
+     */
     ConstantPool(ClassReader cr) throws Exception {
+        // 常量池大小
         int count = cr.readUnsignedShort();
         pool = new CPInfo[count];
         for (int i = 1; i < count; i++) {
+            // 下一个常量类型　tag
             int tag = cr.readUnsignedByte();
             switch (tag) {
                 case CONSTANT_Class:
@@ -76,15 +116,25 @@ public class ConstantPool {
                     break;
 
                 default:
-                    throw new Exception("第" + i + "项常量池,不存在的tag:" + tag);
+                    throw new UnexpectedTagException(i, tag);
             }
         }
     }
 
+    /**
+     * 常量池大小
+     *
+     * @return 常量池的大小
+     */
     public int size() {
         return pool.length;
     }
 
+    /**
+     * 常量池大小
+     *
+     * @return 常量池所占字节数
+     */
     public int byteLength() {
         int length = 2;
         for (int i = 1; i < size(); ) {
@@ -95,53 +145,9 @@ public class ConstantPool {
         return length;
     }
 
-    public enum RefKind {
-        REF_getField(1, "getfield"),
-        REF_getStatic(2, "getstatic"),
-        REF_putField(3, "putfield"),
-        REF_putStatic(4, "putstatic"),
-        REF_invokeVirtual(5, "invokevirtual"),
-        REF_invokeStatic(6, "invokestatic"),
-        REF_invokeSpecial(7, "invokespecial"),
-        REF_newInvokeSpecial(8, "newinvokespecial"),
-        REF_invokeInterface(9, "invokeinterface");
-
-        public final int tag;
-        public final String name;
-
-        RefKind(int tag, String name) {
-            this.tag = tag;
-            this.name = name;
-        }
-
-        static RefKind getRefkind(int tag) {
-            switch (tag) {
-                case 1:
-                    return REF_getField;
-                case 2:
-                    return REF_getStatic;
-                case 3:
-                    return REF_putField;
-                case 4:
-                    return REF_putStatic;
-                case 5:
-                    return REF_invokeVirtual;
-                case 6:
-                    return REF_invokeStatic;
-                case 7:
-                    return REF_invokeSpecial;
-                case 8:
-                    return REF_newInvokeSpecial;
-                case 9:
-                    return REF_invokeInterface;
-                default:
-                    return null;
-            }
-        }
-    }
 
     /**
-     * 常量池中所有常量的抽象父类
+     * 常量池中所有常量类型的抽象父类
      */
     public static abstract class CPInfo {
         protected final ConstantPool cp;
@@ -179,9 +185,9 @@ public class ConstantPool {
     }
 
     /**
-     * 常量池中所有引用常量的抽象父类
+     * 常量池中所有引用常量的父类
      */
-    public static abstract class CPRefInfo extends CPInfo {
+    public static class CPRefInfo extends CPInfo {
         public final int tag;
         /**
          * 指向声明字段的类或者接口描述符CONSTANT_CLASS_INFO的索引项
@@ -192,11 +198,24 @@ public class ConstantPool {
          */
         public final int name_and_type_index;
 
+        /**
+         * 构造函数
+         * @param cp 常量池
+         * @param cr classFile读取类
+         * @param tag　常量的标志
+         * @throws IOException　发生io异常　
+         */
         public CPRefInfo(ConstantPool cp, ClassReader cr, int tag) throws IOException {
             super(cp);
             this.tag = tag;
             class_index = cr.readUnsignedShort();
             name_and_type_index = cr.readUnsignedShort();
+        }
+
+        public CPRefInfo(int tag, int class_index, int name_and_type_index) {
+            this.tag = tag;
+            this.class_index = class_index;
+            this.name_and_type_index = name_and_type_index;
         }
 
         @Override
@@ -211,7 +230,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "[class_index:" + class_index + ", name_and_type_index:" + name_and_type_index + "]";
+            return I("cp.s.ref", class_index, name_and_type_index);
         }
     }
 
@@ -224,9 +243,23 @@ public class ConstantPool {
          */
         public final int name_index;
 
+        /**
+         *
+         * @param cp
+         * @param cr
+         * @throws IOException
+         */
         public CONSTANT_Class_info(ConstantPool cp, ClassReader cr) throws IOException {
             super(cp);
             name_index = cr.readUnsignedShort();
+        }
+
+        /**
+         * 测试用构造函数
+         * @param name_index　名字在常量池中的索引
+         */
+        public CONSTANT_Class_info(int name_index) {
+            this.name_index = name_index;
         }
 
         @Override
@@ -241,7 +274,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_Class_info[name_index:" + name_index + ']';
+            return I("cp.s.constant_class", name_index);
         }
     }
 
@@ -253,6 +286,10 @@ public class ConstantPool {
 
         public CONSTANT_Double_info(ClassReader cr) throws IOException {
             value = cr.readDouble();
+        }
+
+        public CONSTANT_Double_info(double value) {
+            this.value = value;
         }
 
         @Override
@@ -272,7 +309,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_Double_info[value:" + value + "]";
+            return I("cp.s.constant_double", value);
         }
     }
 
@@ -285,9 +322,13 @@ public class ConstantPool {
             super(cp, cr, CONSTANT_Fieldref);
         }
 
+        public CONSTANT_Fieldref_info(int tag, int class_index, int name_and_type_index) {
+            super(tag, class_index, name_and_type_index);
+        }
+
         @Override
         public String toString() {
-            return "CONSTANT_Fieldref_info" + super.toString();
+            return I("cp.s.constant_fieldref", super.toString());
         }
     }
 
@@ -299,6 +340,10 @@ public class ConstantPool {
 
         public CONSTANT_Float_info(ClassReader cr) throws IOException {
             value = cr.readFloat();
+        }
+
+        public CONSTANT_Float_info(float value) {
+            this.value = value;
         }
 
         @Override
@@ -313,18 +358,23 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_Float_info[value:" + value + ']';
+            return I("cp.s.constant_float", value);
         }
     }
 
     /**
      * 整形 常量
      */
-    private static class CONSTANT_Integer_info extends CPInfo {
+    public static class CONSTANT_Integer_info extends CPInfo {
         private final int value;
 
         public CONSTANT_Integer_info(ClassReader cr) throws IOException {
             value = cr.readInt();
+        }
+
+        public CONSTANT_Integer_info(int value) {
+            super();
+            this.value = value;
         }
 
         @Override
@@ -339,21 +389,25 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_Integer_info[value:" + value + ']';
+            return I("cp.s.constant_integer", value);
         }
     }
 
     /**
-     * 接口方法
+     * 接口中方法的符号引用
      */
     public static class CONSTANT_InterfaceMethodref_info extends CPRefInfo {
-        CONSTANT_InterfaceMethodref_info(ConstantPool cp, ClassReader cr) throws IOException {
+        public CONSTANT_InterfaceMethodref_info(ConstantPool cp, ClassReader cr) throws IOException {
             super(cp, cr, CONSTANT_InterfaceMethodref);
+        }
+
+        public CONSTANT_InterfaceMethodref_info(int tag, int class_index, int name_and_type_index) {
+            super(tag, class_index, name_and_type_index);
         }
 
         @Override
         public String toString() {
-            return "CONSTANT_InterfaceMethodref_info" + super.toString();
+            return I("cp.s.constant_interface_methodref", super.toString());
         }
     }
 
@@ -619,6 +673,52 @@ public class ConstantPool {
         }
     }
 
+    public enum RefKind {
+        REF_getField(1, "getfield"),
+        REF_getStatic(2, "getstatic"),
+        REF_putField(3, "putfield"),
+        REF_putStatic(4, "putstatic"),
+        REF_invokeVirtual(5, "invokevirtual"),
+        REF_invokeStatic(6, "invokestatic"),
+        REF_invokeSpecial(7, "invokespecial"),
+        REF_newInvokeSpecial(8, "newinvokespecial"),
+        REF_invokeInterface(9, "invokeinterface");
+
+        public final int tag;
+        public final String name;
+
+        RefKind(int tag, String name) {
+            this.tag = tag;
+            this.name = name;
+        }
+
+        static RefKind getRefkind(int tag) {
+            switch (tag) {
+                case 1:
+                    return REF_getField;
+                case 2:
+                    return REF_getStatic;
+                case 3:
+                    return REF_putField;
+                case 4:
+                    return REF_putStatic;
+                case 5:
+                    return REF_invokeVirtual;
+                case 6:
+                    return REF_invokeStatic;
+                case 7:
+                    return REF_invokeSpecial;
+                case 8:
+                    return REF_newInvokeSpecial;
+                case 9:
+                    return REF_invokeInterface;
+                default:
+                    return null;
+            }
+        }
+    }
+
+    private final CPInfo[] pool;
     public static final int CONSTANT_Utf8 = 1;
     public static final int CONSTANT_Integer = 3;
     public static final int CONSTANT_Float = 4;

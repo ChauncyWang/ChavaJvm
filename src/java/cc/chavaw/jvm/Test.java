@@ -1,10 +1,7 @@
 package cc.chavaw.jvm;
 
-import cc.chavaw.jvm.classfile.ClassFile;
+import cc.chavaw.jvm.classfile.ConstantPool;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -12,19 +9,18 @@ import java.io.IOException;
  * Created by 13969 on 2017/6/13.
  */
 public class Test {
-    @Override
-    public String toString() {
-        return "Test{}";
-    }
-
-    public static void main(String[] args) {
-        try {
-            FileInputStream fis = new FileInputStream(
-                    new File("build/classes/main/Src.class"));
-            ClassFile c = new ClassFile(fis);
-            System.out.println(c);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws IOException {
+        Object a= new ConstantPool.CPRefInfo(10,20,20);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_Class_info(10);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_Double_info(10);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_Fieldref_info(10,20,30);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_Float_info(1.2345f);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_InterfaceMethodref_info(10,23,35);
+        System.out.println(a);
     }
 }

@@ -29,7 +29,7 @@ public class AccessFlags {
         this.flags = flags;
     }
 
-    public static enum Kind {Class, InnerClass, Field, Method}
+    public enum Kind {Class, InnerClass, Field, Method}
     /** 类的修饰符 */
     private static final int[] classFlags = {
             ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_INTERFACE, ACC_ABSTRACT,
