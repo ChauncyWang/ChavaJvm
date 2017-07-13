@@ -3,7 +3,7 @@ package com.chavaw.jvm;
 import cc.chavaw.jvm.classfile.ConstantPool;
 
 /**
- * ²âÊÔ¹ú¼Ê»¯
+ * æµ‹è¯•å›½é™…åŒ–
  * Created by root on 7/13/17.
  */
 public class TestLang {

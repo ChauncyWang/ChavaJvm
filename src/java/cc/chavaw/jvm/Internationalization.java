@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * ¹ú¼Ê»¯
+ * å›½é™…åŒ–
  * Created by root on 7/13/17.
  */
 public class Internationalization {

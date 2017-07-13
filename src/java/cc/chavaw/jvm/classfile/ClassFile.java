@@ -3,14 +3,14 @@ package cc.chavaw.jvm.classfile;
 import java.io.InputStream;
 
 /**
- * class file ½á¹¹
+ * class file ç»“æ„
  * Created by chava on 17-7-9.
  */
 public class ClassFile {
     /**
-     * ´Ó¡¡InputStream ÖĞ½âÎö³öÒ»¸ö ClassFile ¶ÔÏó
-     * @param in¡¡ÊäÈëÁ÷
-     * @throws Exception¡¡·¢ÉúÒì³£
+     * ä»ã€€InputStream ä¸­è§£æå‡ºä¸€ä¸ª ClassFile å¯¹è±¡
+     * @param inã€€è¾“å…¥æµ
+     * @throws Exceptionã€€å‘ç”Ÿå¼‚å¸¸
      */
     public ClassFile(InputStream in) throws Exception {
         cr = new ClassReader(this, in);

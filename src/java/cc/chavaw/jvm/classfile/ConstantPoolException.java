@@ -1,20 +1,20 @@
 package cc.chavaw.jvm.classfile;
 
 /**
- * ³£Á¿³ØÒì³£
+ * å¸¸é‡æ± å¼‚å¸¸
  * Created by root on 7/13/17.
  */
 public class ConstantPoolException extends Exception {
     /**
-     * ¹¹Ôìº¯Êı
-     * @param index ÔÚ³£Á¿³ØÎ»ÖÃË÷Òı
+     * æ„é€ å‡½æ•°
+     * @param index åœ¨å¸¸é‡æ± ä½ç½®ç´¢å¼•
      */
     public ConstantPoolException(int index) {
         this.index = index;
     }
 
     /**
-     * Òì³£³öÏÖµÄÎ»ÖÃ:ÔÚ³£Á¿³ØÖĞµÄË÷Òı
+     * å¼‚å¸¸å‡ºç°çš„ä½ç½®:åœ¨å¸¸é‡æ± ä¸­çš„ç´¢å¼•
      */
     public final int index;
 }
