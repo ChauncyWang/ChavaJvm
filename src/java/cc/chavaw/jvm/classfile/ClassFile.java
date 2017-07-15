@@ -1,6 +1,7 @@
 package cc.chavaw.jvm.classfile;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * class file 结构
@@ -18,7 +19,7 @@ public class ClassFile {
         minor_version = cr.readUnsignedShort();
         major_version = cr.readUnsignedShort();
         constant_pool = new ConstantPool(cr);
-        access_flags = new AccessFlags(cr.readInt());
+        access_flags = new AccessFlags(cr);
         this_class = cr.readUnsignedShort();
         super_class = cr.readUnsignedShort();
         int interfaces_count = cr.readUnsignedShort();
@@ -47,6 +48,23 @@ public class ClassFile {
         this.attributes = attributes;
     }
 
+    @Override
+    public String toString() {
+        return "ClassFile{" +
+                "magic=" + magic +
+                ", minor_version=" + minor_version +
+                ", major_version=" + major_version +
+                ", constant_pool=" + constant_pool +
+                ", access_flags=" + access_flags.getClassFlag() +
+                ", this_class=" + this_class +
+                ", super_class=" + super_class +
+                ", interfaces=" + Arrays.toString(interfaces) +
+                ", fields=" + Arrays.toString(fields) +
+                ", methods=" + Arrays.toString(methods) +
+                ", attributes=" + attributes +
+                ", cr=" + cr +
+                '}';
+    }
 
     public final int magic;
     public final int minor_version;

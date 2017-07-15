@@ -13,5 +13,6 @@ public class Test2ClassFile {
     public static void main(String[] args) throws Exception {
         File f = new File("build/classes/main/cc/chavaw/jvm/Test.class");
         ClassFile cf = new ClassFile(new FileInputStream(f));
+        System.out.println(cf);
     }
 }
