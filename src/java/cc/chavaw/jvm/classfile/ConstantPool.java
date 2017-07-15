@@ -275,7 +275,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return I("cp.s.constant_class", name_index);
+            return I("cp.s.class", name_index);
         }
     }
 
@@ -310,7 +310,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return I("cp.s.constant_double", value);
+            return I("cp.s.double", value);
         }
     }
 
@@ -329,7 +329,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return I("cp.s.constant_fieldref", super.toString());
+            return I("cp.s.fieldref", super.toString());
         }
     }
 
@@ -359,7 +359,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return I("cp.s.constant_float", value);
+            return I("cp.s.float", value);
         }
     }
 
@@ -390,7 +390,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return I("cp.s.constant_integer", value);
+            return I("cp.s.integer", value);
         }
     }
 
@@ -408,7 +408,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return I("cp.s.constant_interface_methodref", super.toString());
+            return I("cp.s.interface_methodref", super.toString());
         }
     }
 
@@ -474,7 +474,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return I("cp.s.constant_long", value);
+            return I("cp.s.long", value);
         }
     }
 
@@ -497,6 +497,11 @@ public class ConstantPool {
             reference_index = cr.readUnsignedShort();
         }
 
+        public CONSTANT_MethodHandle_info(RefKind reference_kind, int reference_index) {
+            this.reference_kind = reference_kind;
+            this.reference_index = reference_index;
+        }
+
         @Override
         public int getTag() {
             return CONSTANT_MethodHandle;
@@ -509,7 +514,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_MethodHandle_info[ref_kind: " + reference_kind + ", member_index: " + reference_index + "]";
+            return I("cp.s.method_handle", reference_kind, reference_index);
         }
     }
 
@@ -534,7 +539,7 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_MethodType_info[signature_index: " + descriptor_index + "]";
+            return I("cp.s.method_type", descriptor_index);
         }
     }
 
@@ -546,29 +551,29 @@ public class ConstantPool {
             super(cp, cr, CONSTANT_Methodref);
         }
 
+        public CONSTANT_Methodref_info(int tag, int class_index, int name_and_type_index) {
+            super(tag, class_index, name_and_type_index);
+        }
+
         @Override
         public String toString() {
-            return "CONSTANT_Methodref_info" + super.toString();
+            return I("cp.s.methodref", super.toString());
         }
     }
 
     /**
-     * 字段名字和类型
+     * 字段的名字和类型
      */
     public static class CONSTANT_NameAndType_info extends CPInfo {
-        /**
-         * 指向字段或方法名称常量的索引
-         */
-        public final int name_index;
-        /**
-         * 指向字段或方法描述符常量的索引
-         */
-        public final int type_index;
-
         CONSTANT_NameAndType_info(ConstantPool cp, ClassReader cr) throws IOException {
             super(cp);
             name_index = cr.readUnsignedShort();
             type_index = cr.readUnsignedShort();
+        }
+
+        public CONSTANT_NameAndType_info(int name_index, int type_index) {
+            this.name_index = name_index;
+            this.type_index = type_index;
         }
 
         public int getTag() {
@@ -581,26 +586,29 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_NameAndType_info[name_index: " + name_index + ", type_index: " + type_index + "]";
+            return I("cp.s.name_and_type", name_index, type_index);
         }
+
+        /**
+         * 指向字段或方法名称常量的索引
+         */
+        public final int name_index;
+        /**
+         * 指向字段或方法描述符常量的索引
+         */
+        public final int type_index;
     }
 
     /**
      * 字符串常量
      */
     public static class CONSTANT_String_info extends CPInfo {
-        /**
-         * 字符串常量在常量池中的索引(utf8编码的字符串)
-         */
-        public final int string_index;
-
-        CONSTANT_String_info(ConstantPool cp, ClassReader cr) throws IOException {
+        public CONSTANT_String_info(ConstantPool cp, ClassReader cr) throws IOException {
             super(cp);
             string_index = cr.readUnsignedShort();
         }
 
-        public CONSTANT_String_info(ConstantPool cp, int string_index) {
-            super(cp);
+        public CONSTANT_String_info(int string_index) {
             this.string_index = string_index;
         }
 
@@ -614,8 +622,12 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            return "CONSTANT_String_info[class_index: " + string_index + "]";
+            return I("cp.s.string", string_index);
         }
+        /**
+         * 字符串常量在常量池中的索引(utf8编码的字符串)
+         */
+        public final int string_index;
     }
 
     /**
@@ -624,21 +636,12 @@ public class ConstantPool {
     public static class CONSTANT_Utf8_info extends CPInfo {
         public final String value;
 
-        CONSTANT_Utf8_info(ClassReader cr) throws IOException {
+        public CONSTANT_Utf8_info(ClassReader cr) throws IOException {
             value = cr.readUTF();
         }
 
         public CONSTANT_Utf8_info(String value) {
             this.value = value;
-        }
-
-        static boolean isPrintableAscii(String s) {
-            for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
-                if (c < 32 || c >= 127)
-                    return false;
-            }
-            return true;
         }
 
         @Override
@@ -667,13 +670,13 @@ public class ConstantPool {
 
         @Override
         public String toString() {
-            if (value.length() < 32 && isPrintableAscii(value))
-                return "CONSTANT_Utf8_info[value: \"" + value + "\"]";
-            else
-                return "CONSTANT_Utf8_info[value: (" + value.length() + " chars)]";
+             return I("cp.s.utf8", value);
         }
     }
 
+    /**
+     * 方法句柄中的方法类型
+     */
     public enum RefKind {
         REF_getField(1, "getfield"),
         REF_getStatic(2, "getstatic"),

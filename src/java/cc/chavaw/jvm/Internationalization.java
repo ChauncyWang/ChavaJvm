@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
  * Created by root on 7/13/17.
  */
 public class Internationalization {
-    private static ResourceBundle res = ResourceBundle.getBundle("lang.info", Locale.getDefault());
+    private static ResourceBundle res = ResourceBundle.getBundle("lang.info", Locale.CHINA);
     public static String I(String key, Object...objects) {
         MessageFormat form = new MessageFormat(res.getString(key));
         return form.format(objects);

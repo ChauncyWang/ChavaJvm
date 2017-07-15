@@ -22,5 +22,13 @@ public class Test {
         System.out.println(a);
         a = new ConstantPool.CONSTANT_InterfaceMethodref_info(10,23,35);
         System.out.println(a);
+        a = new ConstantPool.CONSTANT_MethodHandle_info(ConstantPool.RefKind.REF_getField,35);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_Methodref_info(10,23,35);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_String_info(10);
+        System.out.println(a);
+        a = new ConstantPool.CONSTANT_Utf8_info("妈卖批啊!");
+        System.out.println(a);
     }
 }
