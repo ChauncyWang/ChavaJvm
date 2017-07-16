@@ -12,38 +12,6 @@ import static cc.chavaw.jvm.Internationalization.I;
  */
 public class ConstantPool {
     /**
-     * 索引异常:无效的索引
-     */
-    public static class InvalidIndexException extends ConstantPoolException {
-        public InvalidIndexException(int index) {
-            super(index);
-        }
-
-        @Override
-        public String getMessage() {
-            return I("cp.e.invalid_index", index);
-        }
-    }
-
-    /**
-     * 不支持的常量池　tag
-     */
-    public static class UnexpectedTagException extends ConstantPoolException {
-        public UnexpectedTagException(int index, int tag) {
-            super(index);
-            this.tag = tag;
-        }
-
-        @Override
-        public String getMessage() {
-            return I("cp.e.unexpected_tag", index, tag);
-        }
-
-        public final int tag;
-    }
-
-
-    /**
      * 从　ClassReader 读取所有的常量池
      *
      * @param cr classReader
@@ -145,6 +113,58 @@ public class ConstantPool {
         return length;
     }
 
+    /**
+     * 访问者借口
+     */
+    public interface Visitor {
+        void visitClass(CONSTANT_Class_info class_info);
+        void visitDouble(CONSTANT_Double_info double_info);
+        void visitFieldref(CONSTANT_Fieldref_info fieldref_info);
+        void visitFloat(CONSTANT_Float_info float_info);
+        void visitInteger(CONSTANT_Integer_info integer_info);
+        void visitInterfaceMethodref(CONSTANT_InterfaceMethodref_info interfaceMethodref_info);
+        void visitInvokeDynamic(CONSTANT_InvokeDynamic_info invokeDynamic_info);
+        void visitLong(CONSTANT_Long_info long_info);
+        void visitMethodHandle(CONSTANT_MethodHandle_info methodHandle_info);
+        void visitMethodType(CONSTANT_MethodType_info methodType_info);
+        void visitMethodRef(CONSTANT_Methodref_info methodref_info);
+        void visitNameAndType(CONSTANT_NameAndType_info nameAndType_info);
+        void visitString(CONSTANT_String_info string_info);
+        void visitUTF8(CONSTANT_Utf8_info utf8_info);
+    }
+
+
+    /**
+     * 索引异常:无效的索引
+     */
+    public static class InvalidIndexException extends ConstantPoolException {
+        public InvalidIndexException(int index) {
+            super(index);
+        }
+
+        @Override
+        public String getMessage() {
+            return I("cp.e.invalid_index", index);
+        }
+    }
+
+    /**
+     * 不支持的常量池　tag
+     */
+    public static class UnexpectedTagException extends ConstantPoolException {
+        public UnexpectedTagException(int index, int tag) {
+            super(index);
+            this.tag = tag;
+        }
+
+        @Override
+        public String getMessage() {
+            return I("cp.e.unexpected_tag", index, tag);
+        }
+
+        public final int tag;
+    }
+
 
     /**
      * 常量池中所有常量类型的抽象父类
@@ -159,6 +179,12 @@ public class ConstantPool {
         CPInfo(ConstantPool cp) {
             this.cp = cp;
         }
+
+        /**
+         * 访问者 accept 函数
+         * @param visitor 访问者
+         */
+        public abstract void accept(Visitor visitor);
 
         /**
          * 获取 当前常量池的 tag
@@ -187,7 +213,7 @@ public class ConstantPool {
     /**
      * 常量池中所有引用常量的父类
      */
-    public static class CPRefInfo extends CPInfo {
+    public static abstract class CPRefInfo extends CPInfo {
         public final int tag;
         /**
          * 指向声明字段的类或者接口描述符CONSTANT_CLASS_INFO的索引项
@@ -264,6 +290,11 @@ public class ConstantPool {
         }
 
         @Override
+        public void accept(Visitor visitor) {
+            visitor.visitClass(this);
+        }
+
+        @Override
         public int getTag() {
             return CONSTANT_Class;
         }
@@ -299,6 +330,11 @@ public class ConstantPool {
         }
 
         @Override
+        public void accept(Visitor visitor) {
+            visitor.visitDouble(this);
+        }
+
+        @Override
         public int getTag() {
             return CONSTANT_Double;
         }
@@ -331,6 +367,11 @@ public class ConstantPool {
         public String toString() {
             return I("cp.s.fieldref", super.toString());
         }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitFieldref(this);
+        }
     }
 
     /**
@@ -345,6 +386,11 @@ public class ConstantPool {
 
         public CONSTANT_Float_info(float value) {
             this.value = value;
+        }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitFloat(this);
         }
 
         @Override
@@ -379,6 +425,11 @@ public class ConstantPool {
         }
 
         @Override
+        public void accept(Visitor visitor) {
+            visitor.visitInteger(this);
+        }
+
+        @Override
         public int getTag() {
             return CONSTANT_Integer;
         }
@@ -410,6 +461,11 @@ public class ConstantPool {
         public String toString() {
             return I("cp.s.interface_methodref", super.toString());
         }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitInterfaceMethodref(this);
+        }
     }
 
     /**
@@ -430,6 +486,12 @@ public class ConstantPool {
             super(cp);
             bootstrap_method_attr_index = cr.readUnsignedShort();
             name_and_type_index = cr.readUnsignedShort();
+        }
+
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitInvokeDynamic(this);
         }
 
         @Override
@@ -457,6 +519,11 @@ public class ConstantPool {
 
         CONSTANT_Long_info(ClassReader cr) throws IOException {
             value = cr.readLong();
+        }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitLong(this);
         }
 
         public int getTag() {
@@ -503,6 +570,11 @@ public class ConstantPool {
         }
 
         @Override
+        public void accept(Visitor visitor) {
+            visitor.visitMethodHandle(this);
+        }
+
+        @Override
         public int getTag() {
             return CONSTANT_MethodHandle;
         }
@@ -527,6 +599,11 @@ public class ConstantPool {
         CONSTANT_MethodType_info(ConstantPool cp, ClassReader cr) throws IOException {
             super(cp);
             descriptor_index = cr.readUnsignedShort();
+        }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitMethodType(this);
         }
 
         public int getTag() {
@@ -559,6 +636,11 @@ public class ConstantPool {
         public String toString() {
             return I("cp.s.methodref", super.toString());
         }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitMethodRef(this);
+        }
     }
 
     /**
@@ -574,6 +656,11 @@ public class ConstantPool {
         public CONSTANT_NameAndType_info(int name_index, int type_index) {
             this.name_index = name_index;
             this.type_index = type_index;
+        }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitNameAndType(this);
         }
 
         public int getTag() {
@@ -612,6 +699,11 @@ public class ConstantPool {
             this.string_index = string_index;
         }
 
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitString(this);
+        }
+
         public int getTag() {
             return CONSTANT_String;
         }
@@ -642,6 +734,11 @@ public class ConstantPool {
 
         public CONSTANT_Utf8_info(String value) {
             this.value = value;
+        }
+
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visitUTF8(this);
         }
 
         @Override
