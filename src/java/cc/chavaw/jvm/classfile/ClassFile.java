@@ -29,12 +29,12 @@ public class ClassFile {
         }
         fields = new Field[2];
         methods = new Method[2];
-        attributes = new Attributes();
+        attributes = new Attribute(1,1);
     }
 
     public ClassFile(int magic, int minor_version, int major_version, ConstantPool constant_pool,
                      AccessFlags access_flags, int this_class, int super_class, int[] interfaces,
-                     Field[] fields, Method[] methods, Attributes attributes) {
+                     Field[] fields, Method[] methods, Attribute attributes) {
         this.magic = magic;
         this.minor_version = minor_version;
         this.major_version = major_version;
@@ -76,7 +76,7 @@ public class ClassFile {
     public final int[] interfaces;
     public final Field[] fields;
     public final Method[] methods;
-    public final Attributes attributes;
+    public final Attribute attributes;
 
     private ClassReader cr;
 }
