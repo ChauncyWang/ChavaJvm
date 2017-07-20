@@ -3,9 +3,9 @@ package cc.chavaw.jvm.classfile;
 import java.io.IOException;
 
 /**
- * 异常属性,列举出 throws 后面方法可能抛出的异常
- * [使用位置]方法表
- * [含   义]方法抛出的异常
+ * 异常属性,列举出 throws 后面方法可能抛出的异常<br>
+ * [使用位置]方法表<br>
+ * [含   义]方法抛出的异常<br>
  * Created by root on 7/19/17.
  */
 public class Exceptions_attribute extends Attribute {
@@ -49,5 +49,4 @@ public class Exceptions_attribute extends Attribute {
      * 抛出异常的类型表 指向常量池中的 number_of_exceptions 个 Constant_Class_info 常量
      */
     public final int[] exception_index_table;
-
 }

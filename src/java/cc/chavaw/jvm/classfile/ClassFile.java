@@ -9,9 +9,10 @@ import java.util.Arrays;
  */
 public class ClassFile {
     /**
+     *
      * 从　InputStream 中解析出一个 ClassFile 对象
-     * @param in　输入流
-     * @throws Exception　发生异常
+     * @param in 输入流
+     * @throws Exception IO异常
      */
     public ClassFile(InputStream in) throws Exception {
         cr = new ClassReader(this, in);

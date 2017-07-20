@@ -270,10 +270,10 @@ public class ConstantPool {
          */
         public final int name_index;
 
-        /**
-         * @param cp
-         * @param cr
-         * @throws IOException
+        /** 利用常量池和Class读取类构造
+         * @param cp 常量池
+         * @param cr class 读取类
+         * @throws IOException 发生IO异常
          */
         public CONSTANT_Class_info(ConstantPool cp, ClassReader cr) throws IOException {
             super(cp);
