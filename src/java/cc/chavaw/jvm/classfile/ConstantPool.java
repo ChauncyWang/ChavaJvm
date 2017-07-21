@@ -3,8 +3,7 @@ package cc.chavaw.jvm.classfile;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import static cc.chavaw.jvm.Internationalization.I;
+import java.util.Iterator;
 
 /**
  * 常量池
@@ -114,23 +113,152 @@ public class ConstantPool {
     }
 
     /**
-     * 访问者借口
+     * 获取常量池中的常量
+     *
+     * @param index 常量索引
+     * @return 索引位置的常量
+     * @throws InvalidIndexException 索引越界或是索引位置的常量信息为空
      */
-    public interface Visitor {
-        void visitClass(CONSTANT_Class_info class_info);
-        void visitDouble(CONSTANT_Double_info double_info);
-        void visitFieldref(CONSTANT_Fieldref_info fieldref_info);
-        void visitFloat(CONSTANT_Float_info float_info);
-        void visitInteger(CONSTANT_Integer_info integer_info);
-        void visitInterfaceMethodref(CONSTANT_InterfaceMethodref_info interfaceMethodref_info);
-        void visitInvokeDynamic(CONSTANT_InvokeDynamic_info invokeDynamic_info);
-        void visitLong(CONSTANT_Long_info long_info);
-        void visitMethodHandle(CONSTANT_MethodHandle_info methodHandle_info);
-        void visitMethodType(CONSTANT_MethodType_info methodType_info);
-        void visitMethodRef(CONSTANT_Methodref_info methodref_info);
-        void visitNameAndType(CONSTANT_NameAndType_info nameAndType_info);
-        void visitString(CONSTANT_String_info string_info);
-        void visitUTF8(CONSTANT_Utf8_info utf8_info);
+    public CPInfo get(int index) throws InvalidIndexException {
+        if (index <= 0 || index >= size()) {
+            throw new InvalidIndexException(index);
+        }
+        CPInfo info = pool[index];
+        if (info == null) {
+            throw new InvalidIndexException(index);
+        }
+
+        return info;
+    }
+
+    /**
+     * 获取索引位置为指定类型的常量信息
+     *
+     * @param index         索引位置
+     * @param expected_type 要求类型的 tag
+     * @return 获取到的常量信息
+     * @throws UnexpectedTagException 该索引位置不是 expected_type 类型的常量
+     * @throws InvalidIndexException  索引越界或是索引位置的常量信息为空
+     */
+    private CPInfo get(int index, int expected_type) throws UnexpectedTagException, InvalidIndexException {
+        CPInfo info = get(index);
+        if (info.getTag() != expected_type) {
+            throw new UnexpectedTagException(index, expected_type);
+        }
+        return info;
+    }
+
+    /**
+     * 在指定索引位置获取一个UTF8信息型的常量
+     *
+     * @param index 索引位置
+     * @return 获取到的utf8型常量
+     * @throws InvalidIndexException  索引越界或是索引位置的常量信息为空
+     * @throws UnexpectedTagException 索引位置不是 UTF8Info 的数据类型
+     */
+    public CONSTANT_Utf8_info getUTF8Info(int index) throws InvalidIndexException, UnexpectedTagException {
+        return (CONSTANT_Utf8_info) get(index, CONSTANT_Utf8);
+    }
+
+    /**
+     * 在指定的索引位置获取一个 ClassInfo 数据类型的常量
+     *
+     * @param index 索引位置
+     * @return 获取到的 ClassInfo 的常量信息
+     * @throws InvalidIndexException  索引越界或是索引位置的常量信息为空
+     * @throws UnexpectedTagException 索引位置不是 ClassInfo 的数据类型
+     */
+    public CONSTANT_Class_info getClassInfo(int index) throws InvalidIndexException, UnexpectedTagException {
+        return (CONSTANT_Class_info) get(index, CONSTANT_Class);
+    }
+
+
+    /**
+     * 在指定的索引位置获取一个 NameAndType 数据类型的常量
+     *
+     * @param index 索引位置
+     * @return 获取到的 NameAndType 的常量信息
+     * @throws InvalidIndexException  索引越界或是索引位置的常量信息为空
+     * @throws UnexpectedTagException 索引位置不是 NameAndType 的数据类型
+     */
+    public CONSTANT_NameAndType_info getNameAndTypeInfo(int index) throws InvalidIndexException, UnexpectedTagException {
+        return (CONSTANT_NameAndType_info) get(index, CONSTANT_NameAndType);
+    }
+
+    /**
+     * 从指定的索引位置读取一个 utf8 字符串
+     *
+     * @param index 索引位置
+     * @return utf8 编码的字符串
+     * @throws InvalidIndexException  索引越界或是索引位置的常量信息为空
+     * @throws UnexpectedTagException 索引位置不是 UTF8Info 的数据类型
+     */
+    public String getUTF8Value(int index) throws InvalidIndexException, UnexpectedTagException {
+        return getUTF8Info(index).value;
+    }
+
+    /**
+     * 获取常量池的迭代器
+     *
+     * @return 常量池的迭代器
+     */
+    public Iterable<CPInfo> entries() {
+        return () -> new Iterator<CPInfo>() {
+            @Override
+            public boolean hasNext() {
+                return next < pool.length;
+            }
+
+            @Override
+            public CPInfo next() {
+                current = pool[next];
+                switch (current.getTag()) {
+                    case CONSTANT_Long:
+                    case CONSTANT_Double:
+                        next += 2;
+                        break;
+                    default:
+                        next += 1;
+                }
+                return current;
+            }
+
+            private CPInfo current;
+            // 常量池中 1 号位（也就是 index = 0）不存储信息,JVM的规定吧
+            private int next = 1;
+        };
+    }
+    /**
+     * 访问者接口
+     */
+    public interface Visitor<R, P> {
+        R visitClass(CONSTANT_Class_info class_info, P p);
+
+        R visitDouble(CONSTANT_Double_info double_info, P p);
+
+        R visitFieldref(CONSTANT_Fieldref_info fieldref_info, P p);
+
+        R visitFloat(CONSTANT_Float_info float_info, P p);
+
+        R visitInteger(CONSTANT_Integer_info integer_info, P p);
+
+        R visitInterfaceMethodref(CONSTANT_InterfaceMethodref_info interfaceMethodref_info, P p);
+
+        R visitInvokeDynamic(CONSTANT_InvokeDynamic_info invokeDynamic_info, P p);
+
+        R visitLong(CONSTANT_Long_info long_info, P p);
+
+        R visitMethodHandle(CONSTANT_MethodHandle_info methodHandle_info, P p);
+
+        R visitMethodType(CONSTANT_MethodType_info methodType_info, P p);
+
+        R visitMethodRef(CONSTANT_Methodref_info methodref_info, P p);
+
+        R visitNameAndType(CONSTANT_NameAndType_info nameAndType_info, P p);
+
+        R visitString(CONSTANT_String_info string_info, P p);
+
+        R visitUTF8(CONSTANT_Utf8_info utf8_info, P p);
     }
 
 
@@ -144,7 +272,7 @@ public class ConstantPool {
 
         @Override
         public String getMessage() {
-            return I("cp.e.invalid_index", index);
+            return "常量池索引越界: #" + index;
         }
     }
 
@@ -159,7 +287,7 @@ public class ConstantPool {
 
         @Override
         public String getMessage() {
-            return I("cp.e.unexpected_tag", index, tag);
+            return "常量池索引位置: #" + index + " 不是 " + tag + "类型";
         }
 
         public final int tag;
@@ -170,7 +298,7 @@ public class ConstantPool {
      * 常量池中所有常量类型的抽象父类
      */
     public static abstract class CPInfo {
-        protected final ConstantPool cp;
+        public final ConstantPool cp;
 
         CPInfo() {
             this.cp = null;
@@ -182,9 +310,10 @@ public class ConstantPool {
 
         /**
          * 访问者 accept 函数
+         *
          * @param visitor 访问者
          */
-        public abstract void accept(Visitor visitor);
+        public abstract <R, P> R accept(Visitor<R, P> visitor,P p);
 
         /**
          * 获取 当前常量池的 tag
@@ -255,10 +384,6 @@ public class ConstantPool {
             return 5;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.ref", class_index, name_and_type_index);
-        }
     }
 
     /**
@@ -270,7 +395,9 @@ public class ConstantPool {
          */
         public final int name_index;
 
-        /** 利用常量池和Class读取类构造
+        /**
+         * 利用常量池和Class读取类构造
+         *
          * @param cp 常量池
          * @param cr class 读取类
          * @throws IOException 发生IO异常
@@ -290,8 +417,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitClass(this);
+        public <R,P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitClass(this, p);
         }
 
         @Override
@@ -304,10 +431,6 @@ public class ConstantPool {
             return 3;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.class", name_index);
-        }
     }
 
     /**
@@ -330,8 +453,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitDouble(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return  visitor.visitDouble(this,p);
         }
 
         @Override
@@ -344,10 +467,6 @@ public class ConstantPool {
             return 9;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.double", value);
-        }
     }
 
     /**
@@ -363,14 +482,10 @@ public class ConstantPool {
             super(tag, class_index, name_and_type_index);
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.fieldref", super.toString());
-        }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitFieldref(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitFieldref(this,p);
         }
     }
 
@@ -389,8 +504,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitFloat(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitFloat(this,p);
         }
 
         @Override
@@ -403,17 +518,13 @@ public class ConstantPool {
             return 5;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.float", value);
-        }
     }
 
     /**
      * 整形 常量
      */
     public static class CONSTANT_Integer_info extends CPInfo {
-        private final int value;
+        public final int value;
 
         public CONSTANT_Integer_info(ClassReader cr) throws IOException {
             value = cr.readInt();
@@ -425,8 +536,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitInteger(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitInteger(this,p);
         }
 
         @Override
@@ -439,10 +550,6 @@ public class ConstantPool {
             return 5;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.integer", value);
-        }
     }
 
     /**
@@ -457,14 +564,10 @@ public class ConstantPool {
             super(tag, class_index, name_and_type_index);
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.interface_methodref", super.toString());
-        }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitInterfaceMethodref(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitInterfaceMethodref(this,p);
         }
     }
 
@@ -490,8 +593,8 @@ public class ConstantPool {
 
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitInvokeDynamic(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitInvokeDynamic(this,p);
         }
 
         @Override
@@ -504,10 +607,6 @@ public class ConstantPool {
             return 5;
         }
 
-        @Override
-        public String toString() {
-            return "CONSTANT_InvokeDynamic_info[bootstrap_method_index: " + bootstrap_method_attr_index + ", name_and_type_index: " + name_and_type_index + "]";
-        }
 
     }
 
@@ -522,8 +621,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitLong(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitLong(this,p);
         }
 
         public int getTag() {
@@ -539,10 +638,7 @@ public class ConstantPool {
             return 9;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.long", value);
-        }
+
     }
 
     /**
@@ -570,8 +666,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitMethodHandle(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitMethodHandle(this,p);
         }
 
         @Override
@@ -584,10 +680,7 @@ public class ConstantPool {
             return 4;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.method_handle", reference_kind, reference_index);
-        }
+
     }
 
     /**
@@ -602,8 +695,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitMethodType(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitMethodType(this,p);
         }
 
         public int getTag() {
@@ -614,10 +707,7 @@ public class ConstantPool {
             return 3;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.method_type", descriptor_index);
-        }
+
     }
 
     /**
@@ -632,14 +722,10 @@ public class ConstantPool {
             super(tag, class_index, name_and_type_index);
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.methodref", super.toString());
-        }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitMethodRef(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitMethodRef(this,p);
         }
     }
 
@@ -659,8 +745,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitNameAndType(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitNameAndType(this,p);
         }
 
         public int getTag() {
@@ -671,10 +757,6 @@ public class ConstantPool {
             return 5;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.name_and_type", name_index, type_index);
-        }
 
         /**
          * 指向字段或方法名称常量的索引
@@ -700,8 +782,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitString(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitString(this,p);
         }
 
         public int getTag() {
@@ -712,10 +794,6 @@ public class ConstantPool {
             return 3;
         }
 
-        @Override
-        public String toString() {
-            return I("cp.s.string", string_index);
-        }
         /**
          * 字符串常量在常量池中的索引(utf8编码的字符串)
          */
@@ -737,8 +815,8 @@ public class ConstantPool {
         }
 
         @Override
-        public void accept(Visitor visitor) {
-            visitor.visitUTF8(this);
+        public <R,P> R accept(Visitor<R,P> visitor,P p) {
+            return visitor.visitUTF8(this,p);
         }
 
         @Override
@@ -763,11 +841,6 @@ public class ConstantPool {
             } catch (IOException ignore) {
             }
             return 1 + sizeOut.size;
-        }
-
-        @Override
-        public String toString() {
-             return I("cp.s.utf8", value);
         }
     }
 
@@ -820,18 +893,60 @@ public class ConstantPool {
     }
 
     private final CPInfo[] pool;
+    /**
+     * 常量池中UTF8编码的字符串的 tag
+     */
     public static final int CONSTANT_Utf8 = 1;
+    /**
+     * 常量池中整型常量的 tag
+     */
     public static final int CONSTANT_Integer = 3;
+    /**
+     * 常量池中浮点型常量的 tag
+     */
     public static final int CONSTANT_Float = 4;
+    /**
+     * 常量池中长整型常量的 tag
+     */
     public static final int CONSTANT_Long = 5;
+    /**
+     * 常量池中双精度常量的 tag
+     */
     public static final int CONSTANT_Double = 6;
+    /**
+     * 常量池中class映射型常量的 tag
+     */
     public static final int CONSTANT_Class = 7;
+    /**
+     * 常量池中字符串类型的 tag
+     */
     public static final int CONSTANT_String = 8;
+    /**
+     * 常量池中字段类型的 tag
+     */
     public static final int CONSTANT_Fieldref = 9;
+    /**
+     * 常量池中方法映射类型常量的 tag
+     */
     public static final int CONSTANT_Methodref = 10;
+    /**
+     * 常量池中接口方法类型常量的 tag
+     */
     public static final int CONSTANT_InterfaceMethodref = 11;
+    /**
+     * 常量池中名称和数据类型常量的 tag
+     */
     public static final int CONSTANT_NameAndType = 12;
+    /**
+     * 常量池中方法句柄常量的 tag
+     */
     public static final int CONSTANT_MethodHandle = 15;
+    /**
+     * 常量池中方法类型常量的 tag
+     */
     public static final int CONSTANT_MethodType = 16;
+    /**
+     * ？？?还没明白
+     */
     public static final int CONSTANT_InvokeDynamic = 18;
 }
