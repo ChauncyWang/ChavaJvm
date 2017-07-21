@@ -70,4 +70,29 @@ public class StackMapTable_attribute extends Attribute {
             return frame_type;
         }
     }
+
+    public static class same_locals_1_stack_item_frame extends stack_map_frame {
+        public same_locals_1_stack_item_frame(int frame_type, ClassReader cr) {
+            super(frame_type);
+            stacks = new verification_type_info[10];
+        }
+
+        @Override
+        public int getOffsetDelta() {
+            return frame_type-64;
+        }
+
+        @Override
+        public int length() {
+            return super.length() + stacks.length;
+        }
+
+        public final verification_type_info[] stacks;
+    }
+
+
+    public static class verification_type_info {
+        public static final int ITEM_Top = 0;
+        public static final int ITEM_Integer = 1;
+    }
 }

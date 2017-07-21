@@ -5,6 +5,7 @@ package cc.chavaw.jvm
   */
 object Main {
   def main(args: Array[String]): Unit = {
-    println("ssssss")
+
+
   }
 }
