@@ -3,9 +3,10 @@ package cc.chavaw.jvm.classfile;
 import java.io.IOException;
 
 /**
- * 字节码属性
- * [使用位置]方法表
- * [含　　义]Java代码编译成的字节码指令
+ * 【使用位置】方法表
+ * 【含　　义】Code属性中包含某个方法，实力初始化方法，类或接口的初始化方法的 java 虚拟机指令及相关辅助信息。<br>
+ * 如果方法声明为 native 或者 abstract 方法，那么 方法属性结构决不能有Code属性。<br>
+ * 在其他情况下，方法属性结构中有且只能有一个 Code 属性。<br>
  * Created by root on 7/19/17.
  */
 public class Code_attribute extends Attribute {
@@ -135,8 +136,9 @@ public class Code_attribute extends Attribute {
          */
         public final int end_pc;
         /**
-         * 在 start_pc 和　end_pc 之间
-         * 获取到　catch_type(及其子类) 类型的异常时
+         * 在 start_pc 和　end_pc 之间<br>
+         * [start_pc,end_pc)<br>
+         * 获取到　catch_type(及其子类) 类型的异常时<br>
          * 都跳转到 handler_pc 的位置进行处理
          */
         public final int handler_pc;

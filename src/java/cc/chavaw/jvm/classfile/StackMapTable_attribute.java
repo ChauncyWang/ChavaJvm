@@ -5,6 +5,10 @@ import java.io.IOException;
 /**
  * 【使用位置】Code属性 <br>
  * 【含   义】该属性会在jvm类加载的字节码验证阶段被检查验证器使用<br>
+ * code 属性中最多可以包含一个 StackMapTable 属性。<br>
+ * 在版本号大于等于50的class文件中，如果方法的code属性中没有附带StackMapTable属性<br>
+ * 那么就以为着它带有一个隐式的栈映射属性(StackMap)<br>
+ * 这个隐式的栈映射属性的作用等同于 number_of_entries 值为0的StackMapTable属性。
  */
 public class StackMapTable_attribute extends Attribute {
     /**

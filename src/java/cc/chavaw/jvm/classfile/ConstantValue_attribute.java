@@ -9,7 +9,9 @@ import java.io.IOException;
  * 而对于类变量，可以在类构造器 cinit 中或者使用 ConstantValue 属性<br>
  * 现在 sun javac 编辑器选择是:<br>
  * 同时使用 final 和 static ，并且是基本数据类型和 java.lang.String 的话就生成 ConstantValue 属性<br>
- * 如果没有被 final 修饰，或者并非基本类型和字符串，则会选择在 cinit 方法中进行初始化
+ * 如果没有被 final 修饰，或者并非基本类型和字符串，则会选择在 cinit 方法中进行初始化<br>
+ * 【注   意】如果字段结构表示的非静态字段包含了 ConstantValue 属性，那么这个属性必须被虚拟机忽略。<br>
+ *  在字段结构的属性表中，最多只能有一个 ConstantValue 属性。
  */
 public class ConstantValue_attribute extends Attribute{
     /**
