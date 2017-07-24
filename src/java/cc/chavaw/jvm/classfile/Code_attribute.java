@@ -13,9 +13,10 @@ public class Code_attribute extends Attribute {
 
     /**
      * 从 ClassReader 中读取对象
-     * @param cr ClassReader
+     *
+     * @param cr                   ClassReader
      * @param attribute_name_index 属性名字索引
-     * @param attribute_length　属性长度
+     * @param attribute_length     　属性长度
      * @throws IOException IO异常
      */
     public Code_attribute(ClassReader cr, int attribute_name_index, int attribute_length) throws IOException {
@@ -24,12 +25,12 @@ public class Code_attribute extends Attribute {
         max_locals = cr.readUnsignedShort();
         code_length = cr.readInt();
         codes = new byte[code_length];
-        for(int i = 0; i < code_length; ++i) {
+        for (int i = 0; i < code_length; ++i) {
             codes[i] = (byte) cr.readUnsignedByte();
         }
         exception_table_length = cr.readUnsignedShort();
         exception_table = new Exception_info[exception_table_length];
-        for(int i = 0; i < exception_table_length; ++i) {
+        for (int i = 0; i < exception_table_length; ++i) {
             exception_table[i] = new Exception_info(cr);
         }
         attribute_count = cr.readUnsignedShort();

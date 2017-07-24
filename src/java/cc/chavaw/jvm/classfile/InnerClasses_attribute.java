@@ -6,19 +6,20 @@ import java.io.IOException;
  * 【使用位置】类文件
  * 【含   义】记录内部类和宿主类之间的关系
  */
-public class InnerClasses_attribute extends Attribute{
+public class InnerClasses_attribute extends Attribute {
     /**
      * 利用 class 读取类 读取对象
-     * @param cr class 读取类
+     *
+     * @param cr                   class 读取类
      * @param attribute_name_index 属性名字的索引
-     * @param attribute_length 属性的长度
+     * @param attribute_length     属性的长度
      * @throws IOException 读取时发生IO异常
      */
     public InnerClasses_attribute(ClassReader cr, int attribute_name_index, int attribute_length) throws IOException {
         super(attribute_name_index, attribute_length);
         number_of_classes = cr.readUnsignedShort();
         inner_classes = new InnerClassesInfo[number_of_classes];
-        for(int i = 0; i < number_of_classes; ++i) {
+        for (int i = 0; i < number_of_classes; ++i) {
             inner_classes[i] = new InnerClassesInfo(cr);
         }
     }

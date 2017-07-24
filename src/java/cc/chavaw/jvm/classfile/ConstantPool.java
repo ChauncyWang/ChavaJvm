@@ -228,6 +228,7 @@ public class ConstantPool {
             private int next = 1;
         };
     }
+
     /**
      * 访问者接口
      */
@@ -309,11 +310,15 @@ public class ConstantPool {
         }
 
         /**
-         * 访问者 accept 函数
+         * 访问者访问接口
          *
          * @param visitor 访问者
+         * @param p       附加信息
+         * @param <R>     返回值类型
+         * @param <P>     附加信息类型
+         * @return 访问后返回的值
          */
-        public abstract <R, P> R accept(Visitor<R, P> visitor,P p);
+        public abstract <R, P> R accept(Visitor<R, P> visitor, P p);
 
         /**
          * 获取 当前常量池的 tag
@@ -417,7 +422,7 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R, P> visitor, P p) {
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
             return visitor.visitClass(this, p);
         }
 
@@ -453,8 +458,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return  visitor.visitDouble(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitDouble(this, p);
         }
 
         @Override
@@ -484,8 +489,8 @@ public class ConstantPool {
 
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitFieldref(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitFieldref(this, p);
         }
     }
 
@@ -504,8 +509,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitFloat(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitFloat(this, p);
         }
 
         @Override
@@ -536,8 +541,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitInteger(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitInteger(this, p);
         }
 
         @Override
@@ -566,8 +571,8 @@ public class ConstantPool {
 
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitInterfaceMethodref(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitInterfaceMethodref(this, p);
         }
     }
 
@@ -593,8 +598,8 @@ public class ConstantPool {
 
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitInvokeDynamic(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitInvokeDynamic(this, p);
         }
 
         @Override
@@ -621,8 +626,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitLong(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitLong(this, p);
         }
 
         public int getTag() {
@@ -666,8 +671,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitMethodHandle(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitMethodHandle(this, p);
         }
 
         @Override
@@ -695,8 +700,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitMethodType(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitMethodType(this, p);
         }
 
         public int getTag() {
@@ -724,8 +729,8 @@ public class ConstantPool {
 
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitMethodRef(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitMethodRef(this, p);
         }
     }
 
@@ -745,8 +750,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitNameAndType(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitNameAndType(this, p);
         }
 
         public int getTag() {
@@ -782,8 +787,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitString(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitString(this, p);
         }
 
         public int getTag() {
@@ -815,8 +820,8 @@ public class ConstantPool {
         }
 
         @Override
-        public <R,P> R accept(Visitor<R,P> visitor,P p) {
-            return visitor.visitUTF8(this,p);
+        public <R, P> R accept(Visitor<R, P> visitor, P p) {
+            return visitor.visitUTF8(this, p);
         }
 
         @Override

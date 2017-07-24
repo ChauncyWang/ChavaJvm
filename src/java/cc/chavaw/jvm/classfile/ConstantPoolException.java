@@ -7,6 +7,7 @@ package cc.chavaw.jvm.classfile;
 public class ConstantPoolException extends Exception {
     /**
      * 构造函数
+     *
      * @param index 在常量池位置索引
      */
     public ConstantPoolException(int index) {

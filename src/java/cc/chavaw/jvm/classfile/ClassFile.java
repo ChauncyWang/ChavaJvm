@@ -9,8 +9,8 @@ import java.util.Arrays;
  */
 public class ClassFile {
     /**
-     *
      * 从　InputStream 中解析出一个 ClassFile 对象
+     *
      * @param in 输入流
      * @throws Exception IO异常
      */
@@ -30,7 +30,7 @@ public class ClassFile {
         }
         fields = new Field[2];
         methods = new Method[2];
-        attributes = new Attribute(1,1);
+        attributes = new Attribute(1, 1);
     }
 
     public ClassFile(int magic, int minor_version, int major_version, ConstantPool constant_pool,

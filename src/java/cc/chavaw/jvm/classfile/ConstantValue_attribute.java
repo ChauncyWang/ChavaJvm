@@ -11,14 +11,15 @@ import java.io.IOException;
  * 同时使用 final 和 static ，并且是基本数据类型和 java.lang.String 的话就生成 ConstantValue 属性<br>
  * 如果没有被 final 修饰，或者并非基本类型和字符串，则会选择在 cinit 方法中进行初始化<br>
  * 【注   意】如果字段结构表示的非静态字段包含了 ConstantValue 属性，那么这个属性必须被虚拟机忽略。<br>
- *  在字段结构的属性表中，最多只能有一个 ConstantValue 属性。
+ * 在字段结构的属性表中，最多只能有一个 ConstantValue 属性。
  */
-public class ConstantValue_attribute extends Attribute{
+public class ConstantValue_attribute extends Attribute {
     /**
      * 利用 class 读取类来读取
-     * @param cr class 读取类
+     *
+     * @param cr                   class 读取类
      * @param attribute_name_index 属性名字的索引
-     * @param attribute_length 属性长度
+     * @param attribute_length     属性长度
      * @throws IOException 读取时发生IO异常
      */
     public ConstantValue_attribute(ClassReader cr, int attribute_name_index, int attribute_length) throws IOException {
