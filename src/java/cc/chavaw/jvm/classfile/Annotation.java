@@ -3,15 +3,9 @@ package cc.chavaw.jvm.classfile;
 import java.io.IOException;
 
 /**
- * 那些有关 runtime  annotation 的都需要继承者这个属性
- */
-public class RuntimeAnnotation_attribute {
-}
-
-/**
  * 有关运行时注解的属性都需要这个结构
  */
-class Annotation {
+public class Annotation {
     /**
      * 利用 class 读取类加载一个 Annotation
      *
@@ -27,6 +21,10 @@ class Annotation {
         }
     }
 
+    /**
+     * 获取整个 注解 的长度
+     * @return 注解所占的字节长度
+     */
     public int length() {
         int n = 2 /*type_index*/ + 2 /*num_element_value_pairs*/;
         for (element_value_pair pair : element_value_pairs)
@@ -112,9 +110,9 @@ class Annotation {
                 case 'c':
                     return new class_element_value(cr, tag);
                 case '@':
-                    return new annotation_element_value(cr,tag);
+                    return new annotation_element_value(cr, tag);
                 case '[':
-                    return new array_element_vlaue(cr,tag);
+                    return new array_element_value(cr, tag);
                 default:
                     return null;
             }
@@ -203,6 +201,9 @@ class Annotation {
         public final int constant_name_index;
     }
 
+    /**
+     * 键值对的值为类字面量
+     */
     public static class class_element_value extends element_value {
         class_element_value(ClassReader cr, int tag) throws IOException {
             super(tag);
@@ -214,9 +215,15 @@ class Annotation {
             return 2;
         }
 
+        /**
+         * 指向常量池的 utf8
+         */
         public final int class_info_index;
     }
 
+    /**
+     * 键值对的值本身也是一个注解
+     */
     public static class annotation_element_value extends element_value {
         public annotation_element_value(ClassReader cr, int tag) throws IOException {
             super(tag);
@@ -228,11 +235,17 @@ class Annotation {
             return annotation_value.length();
         }
 
+        /**
+         * 键值对的值本身所包含的注解
+         */
         public final Annotation annotation_value;
     }
 
-    public static class array_element_vlaue extends element_value {
-        public array_element_vlaue(ClassReader cr, int tag) throws IOException {
+    /**
+     * 键值对的值本身是一个 element_value 类型的数组
+     */
+    public static class array_element_value extends element_value {
+        public array_element_value(ClassReader cr, int tag) throws IOException {
             super(tag);
             num_values = cr.readUnsignedShort();
             values = new element_value[num_values];
@@ -249,7 +262,13 @@ class Annotation {
             return n;
         }
 
+        /**
+         * 数组大小
+         */
         public final int num_values;
+        /**
+         * 数组中的每一个元素都是一个 element_value 类型对象
+         */
         public final element_value[] values;
     }
 }

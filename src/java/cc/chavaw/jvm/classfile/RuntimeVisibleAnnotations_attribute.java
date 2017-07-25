@@ -1,9 +1,12 @@
 package cc.chavaw.jvm.classfile;
 
-/**
- * 【使用位置】类文件、字段、方法<br>
- * 【含   义】记录了添加在类声明、字段声明、或是方法声明上边，且运行时可见的注解
- */
-public class RuntimeVisibleAnnotations_attribute {
+import java.io.IOException;
 
+/**
+ * 运行时可见的注解
+ */
+public class RuntimeVisibleAnnotations_attribute extends RuntimeAnnotations_attribute {
+    public RuntimeVisibleAnnotations_attribute(ClassReader cr, int attribute_name_index, int attribute_length) throws IOException {
+        super(cr, attribute_name_index, attribute_length);
+    }
 }

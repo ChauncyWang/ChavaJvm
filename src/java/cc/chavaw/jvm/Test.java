@@ -11,6 +11,8 @@ import java.io.FileInputStream;
  * 测试类
  * Created by 13969 on 2017/6/13.
  */
+@Deprecated
+@SuppressWarnings("")
 public class Test {
     public static void main(String[] args) throws Exception {
         int a = 1;
